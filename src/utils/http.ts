@@ -38,35 +38,39 @@
 //   }
 // }
 
-//Declare adn export the type for the Event data
-export interface Event {
-  id: string;
-  title: string;
-  image: string;
-  date: string;
-  location: string;
-  searchTerm: string;
-  description: string;
-}
+//Import the type for the Event data from interface types
+import { Event, CustomError, EventCreation } from "@/interface/httpInterface";
 
-//Declare and export the type for the Custom Error data
-export interface CustomError extends Error {
-  info?: string;
-  code?: number | string;
-}
-
-//Function to fetch events from the API
-export async function fetchEvents(searchTerm?: string): Promise<Event[]> {
-  //Stored the url for the events
+export async function fetchEvents(
+  searchTerm?: string,
+  signal?: AbortSignal
+): Promise<Event[]> {
   let url = "http://localhost:3000/events";
-
-  //If search is present, it will take this, else it will work without it normally
   if (searchTerm) {
     url += "?search=" + searchTerm;
   }
 
-  //Response itself
-  const response = await fetch(url);
+  const response = await fetch(url, { signal });
+  if (!response.ok) {
+    const error: CustomError = new Error("Failed to fetch events");
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { events }: { events: Event[] } = await response.json();
+  return events;
+}
+
+// Updated createNewEvent function
+export async function createNewEvent(event: EventCreation): Promise<Event> {
+  const response = await fetch("http://localhost:3000/events", {
+    method: "POST",
+    body: JSON.stringify({ event }), // The backend expects { event }
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   if (!response.ok) {
     const error: CustomError = new Error("Failed to fetch events");
@@ -74,6 +78,7 @@ export async function fetchEvents(searchTerm?: string): Promise<Event[]> {
     error.info = await response.json();
     throw error;
   }
-  const { events }: { events: Event[] } = await response.json();
-  return events;
+
+  const { event: newEvent }: { event: Event } = await response.json();
+  return newEvent;
 }

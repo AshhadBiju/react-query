@@ -41,7 +41,6 @@ app.get("/events", async (req, res) => {
     events: events.map((event) => ({
       id: event.id,
       title: event.title,
-      image: event.image,
       date: event.date,
       description: event.description,
       location: event.location,
@@ -49,12 +48,12 @@ app.get("/events", async (req, res) => {
   });
 });
 
-app.get("/events/images", async (req, res) => {
-  const imagesFileContent = await fs.readFile("./data/images.json");
-  const images = JSON.parse(imagesFileContent);
+// app.get("/events/images", async (req, res) => {
+//   const imagesFileContent = await fs.readFile("./data/images.json");
+//   const images = JSON.parse(imagesFileContent);
 
-  res.json({ images });
-});
+//   res.json({ images });
+// });
 
 app.get("/events/:id", async (req, res) => {
   const { id } = req.params;
@@ -89,7 +88,7 @@ app.post("/events", async (req, res) => {
     !event.description?.trim() ||
     !event.date?.trim() ||
     !event.time?.trim() ||
-    !event.image?.trim() ||
+    // !event.image?.trim() ||
     !event.location?.trim()
   ) {
     return res.status(400).json({ message: "Invalid data provided." });
@@ -123,7 +122,7 @@ app.put("/events/:id", async (req, res) => {
     !event.description?.trim() ||
     !event.date?.trim() ||
     !event.time?.trim() ||
-    !event.image?.trim() ||
+    // !event.image?.trim() ||
     !event.location?.trim()
   ) {
     return res.status(400).json({ message: "Invalid data provided." });

@@ -38,7 +38,7 @@
 // }
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { fetchEvents } from "@/utils/http"; //Import function from utils/http.ts (no need to import type interface again)
+import { fetchEvents } from "@/utils/http";
 
 export default function FetchExample() {
   //API function to fetch events is called here, queryKey (to store and show cached data) and queryFn (to use the async function to show data from http.ts)
@@ -50,7 +50,7 @@ export default function FetchExample() {
 
   // useEffect(() => {
   //   console.log(count);
-  //   setCount(count + 1); // increment count every time the query is refetched (not just on initial render)
+  //   setCount(count + 1); // increment count every tim  e the query is refetched (not just on initial render)
   // }, [data, isLoading, isError, error]);
 
   if (isLoading) {

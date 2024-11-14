@@ -1,49 +1,113 @@
-"use client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createNewEvent } from "@/utils/http";
+import { Event, EventCreation } from "@/interface/httpInterface";
 
-const BASE_URL = "https://jsonplaceholder.typicode.com";
-
-interface NewPost {
-  title: string;
-}
-
-export default function CreatePostExample() {
-  const queryClient = useQueryClient();
-  const [title, setTitle] = useState<string>("");
-
-  const { mutate, isLoading } = useMutation({
-    mutationFn: async (newPost: NewPost) => {
-      const response = await fetch(`${BASE_URL}/posts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPost),
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["posts"]);
-      setTitle(""); // Clear input after successful addition
-    },
+export default function AddNewEvent() {
+  const [formData, setFormData] = useState<EventCreation>({
+    title: "",
+    date: "",
+    location: "",
+    description: "",
+    time: "",
   });
 
-  const handleAddPost = () => {
-    mutate({ title });
+  const { mutate, isPending, isError, error } = useMutation<
+    Event,
+    Error,
+    EventCreation
+  >({
+    mutationFn: createNewEvent,
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    console.log("Submit", formData);
+    mutate(formData); // No 'id' needed, backend will generate it
+  }
+
   return (
-    <div>
-      <h1 className="mb-4 text-2xl">Create a New Post</h1>
-      <input
-        type="text"
-        placeholder="Post Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="border p-2"
-      />
-      <button onClick={handleAddPost} disabled={isLoading} className="ml-2">
-        {isLoading ? "Adding..." : "Add Post"}
-      </button>
+    <div className="container">
+      <h1>Create New Event</h1>
+      <form onSubmit={handleSubmit}>
+        {isPending && "Submitting..."}
+        <div className="form-group">
+          <label htmlFor="title">Event Title</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            required
+            placeholder="Enter event title"
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="date">Event Date</label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="location">Event Location</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            required
+            placeholder="Enter event location"
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="time">Event Time</label>
+          <input
+            type="time"
+            id="time"
+            name="time"
+            value={formData.time}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="description">Event Description</label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            required
+            placeholder="Enter event description"
+          />
+        </div>
+        <button className="border bg-gray-200" type="submit">
+          Submit
+        </button>
+      </form>
+
+      {isError && (
+        <p className="error-message">
+          Error: {error?.message || "Failed to create event"}
+        </p>
+      )}
     </div>
   );
 }

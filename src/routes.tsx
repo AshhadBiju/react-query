@@ -3,19 +3,17 @@ import { RouteObject } from "react-router-dom";
 
 // Import the route object for lazy loading routes
 const UserList: React.FC = lazy(() => import("@/pages/Users/UsersList"));
-const Dashboard: React.FC = lazy(() => import("@/pages/Dashboard/Dashboard"));
-const GeneralSettings: React.FC = lazy(
-  () => import("@/pages/Settings/GeneralSettings")
-);
+const Post: React.FC = lazy(() => import("@/pages/Post/Post"));
+const Search: React.FC = lazy(() => import("@/pages/Search/Search"));
 const Home: React.FC = lazy(() => import("@/pages/Home/Home"));
 const About: React.FC = lazy(() => import("@/pages/About"));
 
 // Define routes
 const routes: RouteObject[] = [
   { path: "/", element: <Home /> },
-  { path: "/dashboard", element: <Dashboard /> },
+  { path: "/post", element: <Post /> },
   { path: "/users", element: <UserList /> },
-  { path: "/settings", element: <GeneralSettings /> },
+  { path: "/search", element: <Search /> },
   { path: "/about", element: <About /> },
 ];
 
