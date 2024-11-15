@@ -1,7 +1,3 @@
-// interface.ts
-
-// interface.ts
-
 export interface Event {
   id: string;
   title: string;
@@ -9,6 +5,7 @@ export interface Event {
   location: string;
   description: string;
   time: string | number;
+  image: string;
 }
 
 export interface CustomError extends Error {

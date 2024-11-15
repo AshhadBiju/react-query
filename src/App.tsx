@@ -1,10 +1,9 @@
 import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // Import QueryClient
 import routes from "@/routes";
-
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/utils/http";
 // Create a new QueryClient instance
-const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   return (

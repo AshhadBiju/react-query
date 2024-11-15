@@ -7,6 +7,9 @@ const Post: React.FC = lazy(() => import("@/pages/Post/Post"));
 const Search: React.FC = lazy(() => import("@/pages/Search/Search"));
 const Home: React.FC = lazy(() => import("@/pages/Home/Home"));
 const About: React.FC = lazy(() => import("@/pages/About"));
+const EventDetails: React.FC = lazy(
+  () => import("@/pages/EventDetails/eventDetails")
+);
 
 // Define routes
 const routes: RouteObject[] = [
@@ -15,6 +18,7 @@ const routes: RouteObject[] = [
   { path: "/users", element: <UserList /> },
   { path: "/search", element: <Search /> },
   { path: "/about", element: <About /> },
+  { path: "/events/:id", element: <EventDetails /> },
 ];
 
 export default routes;

@@ -1,46 +1,10 @@
-// import axios from "axios";
-
-// // Declare and export the type for the Event data
-// export interface Event {
-//   id: string;
-//   title: string;
-//   image: string;
-//   date: string;
-//   description: string;
-//   location: string;
-// }
-
-// // Declare and export the type for the Custom Error data
-// export interface CustomError extends Error {
-//   info?: string;
-//   code?: number | string;
-// }
-
-// // Function to fetch events from the API
-// export async function fetchEvents(): Promise<Event[]> {
-//   try {
-//     const response = await axios.get<{ events: Event[] }>(
-//       "http://localhost:5000/events"
-//     );
-//     const events = response.data.events;
-//     console.log(events);
-
-//     return events;
-//   } catch (error) {
-//     const customError: CustomError = new Error("Failed to fetch events");
-
-//     if (axios.isAxiosError(error)) {
-//       customError.code = error.response?.status;
-//       customError.info = error.response?.data;
-//     }
-
-//     throw customError;
-//   }
-// }
-
-//Import the type for the Event data from interface types
 import { Event, CustomError, EventCreation } from "@/interface/httpInterface";
+import { QueryClient } from "@tanstack/react-query";
 
+// Initialize the queryClient here for optimal event management
+export const queryClient = new QueryClient();
+
+// Fetch events, optionally filtered by a search term
 export async function fetchEvents(
   searchTerm?: string,
   signal?: AbortSignal
@@ -51,8 +15,11 @@ export async function fetchEvents(
   }
 
   const response = await fetch(url, { signal });
+
   if (!response.ok) {
-    const error: CustomError = new Error("Failed to fetch events");
+    const error: CustomError = new Error(
+      "Failed to fetch events"
+    ) as CustomError;
     error.code = response.status;
     error.info = await response.json();
     throw error;
@@ -62,7 +29,7 @@ export async function fetchEvents(
   return events;
 }
 
-// Updated createNewEvent function
+// Create a new event
 export async function createNewEvent(event: EventCreation): Promise<Event> {
   const response = await fetch("http://localhost:3000/events", {
     method: "POST",
@@ -73,7 +40,9 @@ export async function createNewEvent(event: EventCreation): Promise<Event> {
   });
 
   if (!response.ok) {
-    const error: CustomError = new Error("Failed to fetch events");
+    const error: CustomError = new Error(
+      "Failed to create event"
+    ) as CustomError;
     error.code = response.status;
     error.info = await response.json();
     throw error;
@@ -81,4 +50,47 @@ export async function createNewEvent(event: EventCreation): Promise<Event> {
 
   const { event: newEvent }: { event: Event } = await response.json();
   return newEvent;
+}
+
+// Fetch a specific event by ID
+export async function fetchEvent({
+  id,
+  signal,
+}: {
+  id: string;
+  signal?: AbortSignal;
+}): Promise<Event> {
+  const response = await fetch(`http://localhost:3000/events/${id}`, {
+    signal,
+  });
+
+  if (!response.ok) {
+    const error: CustomError = new Error(
+      "An error occurred while fetching the event"
+    ) as CustomError;
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  const { event }: { event: Event } = await response.json();
+  return event;
+}
+
+// Delete an event by ID
+export async function deleteEvent({ id }: { id: string }): Promise<void> {
+  const response = await fetch(`http://localhost:3000/events/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const error: CustomError = new Error(
+      "An error occurred while deleting the event"
+    ) as CustomError;
+    error.code = response.status;
+    error.info = await response.json();
+    throw error;
+  }
+
+  return;
 }
